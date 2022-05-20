@@ -99,7 +99,7 @@ func (b *Bridge) BuildRawTransaction(args *tokens.BuildTxArgs) (rawTx interface{
 		actions = createFunctionCall(args.SwapID, swapinMethod, multichainToken, receiver, amount.String(), args.FromChainID.String(), args.LogIndex, *extra.Gas)
 	}
 	routerContract := b.GetRouterContract(multichainToken)
-	rawTx = createTransaction(args.From, nearPubKey, routerContract, *extra.Sequence, blockHashBytes, actions)
+	rawTx = CreateTransaction(args.From, nearPubKey, routerContract, *extra.Sequence, blockHashBytes, actions)
 	return rawTx, nil
 }
 
@@ -189,7 +189,7 @@ func (b *Bridge) GetSeq(args *tokens.BuildTxArgs) (nonceptr *uint64, err error) 
 	return &nonce, nil
 }
 
-func createTransaction(
+func CreateTransaction(
 	signerID string,
 	publicKey *PublicKey,
 	receiverID string,

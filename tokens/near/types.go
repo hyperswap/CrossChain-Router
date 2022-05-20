@@ -198,3 +198,7 @@ type FungibleTokenMetadata struct {
 	ReferenceHash string `json:"reference_hash"`
 	Decimals      uint8  `json:"decimals"`
 }
+
+type ChangeMpcId struct {
+	NewMpcId string `json:"new_mpc_id"`
+}
