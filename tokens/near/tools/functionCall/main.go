@@ -44,7 +44,7 @@ func main() {
 	}
 	var err error
 	var nearPubKey *near.PublicKey
-	if len(paramPublicKey) == 31 {
+	if len(paramPublicKey) == 64 {
 		nearPubKey, err = near.PublicKeyFromHexString(paramPublicKey)
 		if err != nil {
 			log.Fatal("convert public key to address failed")
