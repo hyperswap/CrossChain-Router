@@ -37,10 +37,10 @@ https://explorer.testnet.near.org/transactions/2XtpKiXfeQd6oy1Q7mQuShTDtpNyzCYfY
 ***
 特别强调  
 >1) mpc公钥和near公钥的关系  
-mpc申请ed公钥后，公钥本身就是一个near的account，转入一笔初始金额后，即激活  
-另外，mpc获取的公钥，通过  https://github.com/anyswap/CrossChain-Router/blob/feature/near/tokens/near/tools/publicKeyToAddress.go  工具可获得near publicKey  
+mpc申请ed公钥(32字节16进制编码字符串)后，公钥本身就是一个near的account，转入一笔初始金额后，即激活  
+另外，mpc获取的公钥，通过  https://github.com/anyswap/CrossChain-Router/blob/feature/near/tokens/near/tools/publicKeyToAddress/main.go  工具可获得near publicKey  
 示例：  
-go run tokens/near/tools/publicKeyToAddress.go f353e1fe460864caf4d720e40e57f14d35f437c3e0b93d1f40a37e89ebdda3bf
+go run tokens/near/tools/publicKeyToAddress/main.go f353e1fe460864caf4d720e40e57f14d35f437c3e0b93d1f40a37e89ebdda3bf
 INFO[2022-05-08T09:58:16.178] convert public key to address success        
 INFO[2022-05-08T09:58:16.178] nearAddress is f353e1fe460864caf4d720e40e57f14d35f437c3e0b93d1f40a37e89ebdda3bf 
 INFO[2022-05-08T09:58:16.178] nearPublicKey is ed25519:HNrFuGeXk7WGXkX2BhRzVK2B7a9E6HLGSujF1uHZAvNa

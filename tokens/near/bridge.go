@@ -2,6 +2,7 @@ package near
 
 import (
 	"math/big"
+	"sync"
 
 	"github.com/anyswap/CrossChain-Router/v3/log"
 	"github.com/anyswap/CrossChain-Router/v3/tokens"
@@ -14,7 +15,8 @@ var (
 	// ensure Bridge impl tokens.NonceSetter
 	_ tokens.NonceSetter = &Bridge{}
 
-	supportedChainIDs = make(map[string]bool)
+	supportedChainIDs     = make(map[string]bool)
+	supportedChainIDsInit sync.Once
 )
 
 const (
@@ -29,10 +31,10 @@ type Bridge struct {
 
 // SupportsChainID supports chainID
 func SupportsChainID(chainID *big.Int) bool {
-	if len(supportedChainIDs) == 0 {
+	supportedChainIDsInit.Do(func() {
 		supportedChainIDs[GetStubChainID(mainnetNetWork).String()] = true
 		supportedChainIDs[GetStubChainID(testnetNetWork).String()] = true
-	}
+	})
 	return supportedChainIDs[chainID.String()]
 }
 

@@ -127,6 +127,11 @@ func Init(isServer bool) {
 func InitConfig(mpcParams *params.MPCConfig, isServer bool) *Config {
 	c := newConfig()
 
+	if mpcParams.SignWithPrivateKey {
+		log.Info("ignore mpc init as sign with private key")
+		return c
+	}
+
 	if mpcParams.SignTypeEC256K1 != "" {
 		c.signTypeEC256K1 = mpcParams.SignTypeEC256K1
 	}
