@@ -51,7 +51,7 @@ func (b *Bridge) registerERC20SwapTx(txHash string, logIndex int) ([]*tokens.Swa
 		*swapInfo = *commonInfo
 		swapInfo.ERC20SwapInfo = &tokens.ERC20SwapInfo{}
 		swapInfo.LogIndex = i // LogIndex
-		events, errv := b.fliterReceipts(receipts[i], false)
+		events, errv := b.fliterReceipts(&receipts[i])
 		if errv != nil {
 			continue
 		}

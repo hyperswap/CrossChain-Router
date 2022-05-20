@@ -78,7 +78,7 @@ func (b *Bridge) verifySwapoutTx(txHash string, logIndex int, allowUnstable bool
 		return swapInfo, tokens.ErrLogIndexOutOfRange
 	}
 
-	events, errv := b.fliterReceipts(receipts[logIndex], allowUnstable)
+	events, errv := b.fliterReceipts(&receipts[logIndex])
 	if errv != nil {
 		return swapInfo, tokens.ErrSwapoutLogNotFound
 	}
@@ -235,7 +235,7 @@ func (b *Bridge) getSwapTxReceipt(swapInfo *tokens.SwapTxInfo, allowUnstable boo
 	return txres.ReceiptsOutcome, nil
 }
 
-func (b *Bridge) fliterReceipts(receipt ReceiptsOutcome, allowUnstable bool) ([]string, error) {
+func (b *Bridge) fliterReceipts(receipt *ReceiptsOutcome) ([]string, error) {
 	var events []string
 	if receipt.Outcome.ExecutorID == b.ChainConfig.RouterContract {
 		events = append(events, receipt.Outcome.Logs...)

@@ -209,13 +209,13 @@ func createTransaction(
 
 func createFunctionCall(txHash, methodName, token, to, amount, fromChainID string, logIndex int, gas uint64) []Action {
 	log.Info("createFunctionCall", "txHash", txHash, "methodName", methodName, "token", token, "to", to, "amount", amount, "fromChainID", fromChainID)
-	swapId := txHash + fmt.Sprint(logIndex)
+	swapID := fmt.Sprintf("%s:%d", txHash, logIndex)
 	var argsBytes []byte
 	switch methodName {
 	case swapinMethod:
-		argsBytes = buildAnySwapInArgs(swapId, token, to, amount, fromChainID)
+		argsBytes = buildAnySwapInArgs(swapID, token, to, amount, fromChainID)
 	case swapinNativeMethod:
-		argsBytes = buildSwapInNativeArgs(swapId, to, amount, fromChainID)
+		argsBytes = buildSwapInNativeArgs(swapID, to, amount, fromChainID)
 	default:
 		log.Fatalf("unknown method name: '%v'", methodName)
 	}
