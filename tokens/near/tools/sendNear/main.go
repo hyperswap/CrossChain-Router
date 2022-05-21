@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/ed25519"
 	"crypto/sha256"
-	"encoding/json"
 	"errors"
 	"flag"
 	"math/big"
@@ -83,7 +82,7 @@ func main() {
 func createTransferCall() ([]near.Action, error) {
 	log.Info("createTransferCall", "to", paramTo, "amount", paramAmount)
 	if paramTo == "" || paramAmount == "" {
-		return nil, errors.New("paramNewMpcId must input")
+		return nil, errors.New("paramTo and paramAmount must input")
 	}
 	amount, err := common.GetBigIntFromStr(paramAmount)
 	if err != nil {
@@ -95,43 +94,6 @@ func createTransferCall() ([]near.Action, error) {
 			Deposit: *amount,
 		},
 	}}, nil
-}
-
-func changeMpcArgs(newMpcId string) []byte {
-	callArgs := &near.ChangeMpcId{
-		NewMpcId: newMpcId,
-	}
-	argsBytes, _ := json.Marshal(callArgs)
-	return argsBytes
-}
-
-func setBaseGasArgs(gas uint64) []byte {
-	callArgs := &near.SetBaseGas{
-		Gas: gas,
-	}
-	argsBytes, _ := json.Marshal(callArgs)
-	return argsBytes
-}
-
-func setGasArgs(token string, gas uint64) []byte {
-	callArgs := &near.SetGas{
-		Token: token,
-		Gas:   gas,
-	}
-	argsBytes, _ := json.Marshal(callArgs)
-	return argsBytes
-}
-
-func anySwapInAllArgs(txHash, token, to, amount, fromChainId string) []byte {
-	callArgs := &near.AnySwapInAll{
-		TxHash:      txHash,
-		Token:       token,
-		To:          to,
-		Amount:      amount,
-		FromChainId: fromChainId,
-	}
-	argsBytes, _ := json.Marshal(callArgs)
-	return argsBytes
 }
 
 func MPCSignTransaction(rawTx interface{}, paramPublicKey string) (signedTx interface{}, txHash string, err error) {
