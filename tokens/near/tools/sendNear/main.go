@@ -21,26 +21,14 @@ import (
 var (
 	bridge = near.NewCrossChainBridge()
 
-	paramConfigFile     string
-	paramChainID        string
-	paramFunctionName   string
-	paramPublicKey      string
-	paramRouterContract string
-	paramNewMpcId       string
-	paramNewGas         string
-	paramToken          string
-	paramTxHash         string
-	paramTo             string
-	paramAmount         string
-	paramFromChainId    string
-	paramGas            uint64 = 300_000_000_000_000
-	chainID                    = big.NewInt(0)
-	mpcConfig           *mpc.Config
-	supportFuncionList  = make(map[string]bool)
-	changeMPC           = "change_mpc_id"
-	setBaseGas          = "set_base_gas"
-	setGas              = "set_gas"
-	anySwapInAll        = "any_swap_in_all"
+	paramConfigFile string
+	paramChainID    string
+	paramPublicKey  string
+	paramTo         string
+	paramAmount     string
+	paramGas        uint64 = 300_000_000_000_000
+	chainID                = big.NewInt(0)
+	mpcConfig       *mpc.Config
 )
 
 func main() {
@@ -48,10 +36,6 @@ func main() {
 
 	initAll()
 
-	if !supportFuncionList[paramFunctionName] {
-		log.Fatal("call function name not support")
-		return
-	}
 	var err error
 	var nearPubKey *near.PublicKey
 	if len(paramPublicKey) == 64 {
@@ -78,11 +62,11 @@ func main() {
 	}
 
 	log.Info("get account nonce success", "nonce", nonce)
-	actions, err := createFunctionCall()
+	actions, err := createTransferCall()
 	if err != nil {
 		log.Fatal("createFunctionCall failed", "err", err)
 	}
-	rawTx := near.CreateTransaction(nearPubKey.Address(), nearPubKey, paramRouterContract, nonce, blockHashBytes, actions)
+	rawTx := near.CreateTransaction(nearPubKey.Address(), nearPubKey, paramTo, nonce, blockHashBytes, actions)
 	signedTx, txHash, err := MPCSignTransaction(rawTx, paramPublicKey)
 	if err != nil {
 		log.Fatal("sign tx failed", "err", err)
@@ -96,48 +80,19 @@ func main() {
 	log.Info("send tx success", "txHash", txHash)
 }
 
-func createFunctionCall() ([]near.Action, error) {
-	log.Info("createFunctionCall", "methodName", paramFunctionName)
-	var argsBytes []byte
-	switch paramFunctionName {
-	case changeMPC:
-		if paramNewMpcId == "" {
-			return nil, errors.New("paramNewMpcId must input")
-		}
-		argsBytes = changeMpcArgs(paramNewMpcId)
-	case setBaseGas:
-		if paramNewGas == "" {
-			return nil, errors.New("paramNewGas must input")
-		}
-		newGas, err := common.GetUint64FromStr(paramNewGas)
-		if err != nil {
-			return nil, err
-		}
-		argsBytes = setBaseGasArgs(newGas)
-	case setGas:
-		if paramNewGas == "" || paramToken == "" {
-			return nil, errors.New("paramToken and paramNewGas must input")
-		}
-		newGas, err := common.GetUint64FromStr(paramNewGas)
-		if err != nil {
-			return nil, err
-		}
-		argsBytes = setGasArgs(paramToken, newGas)
-	case anySwapInAll:
-		if paramTxHash == "" || paramToken == "" || paramTo == "" || paramAmount == "" || paramFromChainId == "" {
-			return nil, errors.New("paramTxHash,paramToken,paramTo,paramAmount and paramFromChainId must input")
-		}
-		argsBytes = anySwapInAllArgs(paramTxHash, paramToken, paramTo, paramAmount, paramFromChainId)
-	default:
-		log.Fatalf("unknown method name: '%v'", paramFunctionName)
+func createTransferCall() ([]near.Action, error) {
+	log.Info("createTransferCall", "to", paramTo, "amount", paramAmount)
+	if paramTo == "" || paramAmount == "" {
+		return nil, errors.New("paramNewMpcId must input")
+	}
+	amount, err := common.GetBigIntFromStr(paramAmount)
+	if err != nil {
+		return nil, err
 	}
 	return []near.Action{{
-		Enum: 2,
-		FunctionCall: near.FunctionCall{
-			MethodName: paramFunctionName,
-			Args:       argsBytes,
-			Gas:        paramGas,
-			Deposit:    *big.NewInt(0),
+		Enum: 3,
+		Transfer: near.Transfer{
+			Deposit: *amount,
 		},
 	}}, nil
 }
@@ -228,22 +183,14 @@ func initAll() {
 	initFlags()
 	initConfig()
 	initBridge()
-	initSupportList()
 }
 
 func initFlags() {
 	flag.StringVar(&paramConfigFile, "config", "", "config file to init mpc and gateway")
 	flag.StringVar(&paramChainID, "chainID", "", "chain id")
-	flag.StringVar(&paramRouterContract, "routerContract", "", "router contract address")
-	flag.StringVar(&paramFunctionName, "functionName", "", "function name")
 	flag.StringVar(&paramPublicKey, "pubKey", "", "signer public key")
-	flag.StringVar(&paramNewMpcId, "newMpcId", "", "(optional) new mpc id")
-	flag.StringVar(&paramNewGas, "newGas", "", "(optional) new gas")
-	flag.StringVar(&paramToken, "token", "", "(optional) token contract address")
-	flag.StringVar(&paramTxHash, "txHash", "", "(optional) tx hash")
 	flag.StringVar(&paramTo, "to", "", "(optional) receive address")
 	flag.StringVar(&paramAmount, "amount", "", "(optional) receive amount")
-	flag.StringVar(&paramFromChainId, "fromChainId", "", "(optional) from chain id")
 
 	flag.Parse()
 
@@ -255,7 +202,7 @@ func initFlags() {
 		chainID = cid
 	}
 
-	log.Info("init flags finished", "functionName", paramFunctionName)
+	log.Info("init flags finished")
 }
 
 func initConfig() {
@@ -276,11 +223,4 @@ func initBridge() {
 		APIAddressExt: apiAddrsExt,
 	})
 	log.Info("init bridge finished")
-}
-
-func initSupportList() {
-	supportFuncionList[changeMPC] = true
-	supportFuncionList[setBaseGas] = true
-	supportFuncionList[setGas] = true
-	supportFuncionList[anySwapInAll] = true
 }

@@ -202,3 +202,20 @@ type FungibleTokenMetadata struct {
 type ChangeMpcId struct {
 	NewMpcId string `json:"new_mpc_id"`
 }
+
+type SetBaseGas struct {
+	Gas uint64 `json:"gas"`
+}
+
+type SetGas struct {
+	Token string `json:"token"`
+	Gas   uint64 `json:"gas"`
+}
+
+type AnySwapInAll struct {
+	TxHash      string `json:"tx"`
+	Token       string `json:"token"`
+	To          string `json:"to"`
+	Amount      string `json:"amount"`
+	FromChainId string `json:"from_chain_id"`
+}
