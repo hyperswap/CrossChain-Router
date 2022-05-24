@@ -96,6 +96,7 @@ func main() {
 	log.Info("send tx success", "txHash", txHash)
 }
 
+//nolint:gocyclo // allow long method
 func createFunctionCall() ([]near.Action, error) {
 	log.Info("createFunctionCall", "methodName", paramFunctionName)
 	var argsBytes []byte

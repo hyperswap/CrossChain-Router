@@ -25,8 +25,7 @@ var (
 	paramPublicKey  string
 	paramTo         string
 	paramAmount     string
-	paramGas        uint64 = 300_000_000_000_000
-	chainID                = big.NewInt(0)
+	chainID         = big.NewInt(0)
 	mpcConfig       *mpc.Config
 )
 
