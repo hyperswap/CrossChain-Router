@@ -75,22 +75,18 @@ func (b *Bridge) BuildRawTransaction(args *tokens.BuildTxArgs) (rawTx interface{
 		return nil, tokens.ErrMissTokenConfig
 	}
 
-	extra, err := b.initExtra(args)
-	if err != nil {
-		return nil, err
-	}
-
 	receiver, amount, err := b.getReceiverAndAmount(args, multichainToken)
 	if err != nil {
 		return nil, err
 	}
 	args.SwapValue = amount // SwapValue
 
-	blockHash, getBlockHashErr := b.GetLatestBlockHash()
-	if getBlockHashErr != nil {
-		return nil, getBlockHashErr
+	extra, err := b.initExtra(args)
+	if err != nil {
+		return nil, err
 	}
-	blockHashBytes, err := base58.Decode(blockHash)
+
+	blockHashBytes, err := base58.Decode(*extra.BlockHash)
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +116,14 @@ func (b *Bridge) initExtra(args *tokens.BuildTxArgs) (extra *tokens.AllExtras, e
 	if extra.Gas == nil {
 		gas := defaultGasLimit
 		extra.Gas = &gas
+	}
+	if extra.BlockHash == nil {
+		var blockHash string
+		blockHash, err = b.GetLatestBlockHash()
+		if err != nil {
+			return nil, err
+		}
+		extra.BlockHash = &blockHash
 	}
 	return extra, nil
 }
