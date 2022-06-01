@@ -150,8 +150,8 @@ func initFlags() {
 	flag.StringVar(&paramConfigFile, "config", "", "config file to init mpc and gateway")
 	flag.StringVar(&paramChainID, "chainID", "", "chain id")
 	flag.StringVar(&paramPublicKey, "pubKey", "", "signer public key")
-	flag.StringVar(&paramTo, "to", "", "(optional) receive address")
-	flag.StringVar(&paramAmount, "amount", "", "(optional) receive amount")
+	flag.StringVar(&paramTo, "to", "", "receive address")
+	flag.StringVar(&paramAmount, "amount", "", "receive amount")
 
 	flag.Parse()
 

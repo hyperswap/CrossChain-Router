@@ -33,6 +33,7 @@ var (
 	paramTo             string
 	paramAmount         string
 	paramFromChainId    string
+	paramWnative        string
 	paramGas            uint64 = 300_000_000_000_000
 	chainID                    = big.NewInt(0)
 	mpcConfig           *mpc.Config
@@ -41,6 +42,7 @@ var (
 	setBaseGas          = "set_base_gas"
 	setGas              = "set_gas"
 	anySwapInAll        = "any_swap_in_all"
+	changeWnative       = "change_wnative"
 )
 
 func main() {
@@ -129,6 +131,11 @@ func createFunctionCall() ([]near.Action, error) {
 			return nil, errors.New("paramTxHash,paramToken,paramTo,paramAmount and paramFromChainId must input")
 		}
 		argsBytes = anySwapInAllArgs(paramTxHash, paramToken, paramTo, paramAmount, paramFromChainId)
+	case changeWnative:
+		if paramWnative == "" {
+			return nil, errors.New("paramWnative must input")
+		}
+		argsBytes = changeWnativeArgs(paramWnative)
 	default:
 		log.Fatalf("unknown method name: '%v'", paramFunctionName)
 	}
@@ -175,6 +182,14 @@ func anySwapInAllArgs(txHash, token, to, amount, fromChainId string) []byte {
 		To:          to,
 		Amount:      amount,
 		FromChainId: fromChainId,
+	}
+	argsBytes, _ := json.Marshal(callArgs)
+	return argsBytes
+}
+
+func changeWnativeArgs(newWnative string) []byte {
+	callArgs := &near.ChangeWnative{
+		NewWnative: newWnative,
 	}
 	argsBytes, _ := json.Marshal(callArgs)
 	return argsBytes
@@ -245,6 +260,7 @@ func initFlags() {
 	flag.StringVar(&paramTo, "to", "", "(optional) receive address")
 	flag.StringVar(&paramAmount, "amount", "", "(optional) receive amount")
 	flag.StringVar(&paramFromChainId, "fromChainId", "", "(optional) from chain id")
+	flag.StringVar(&paramWnative, "newWnative", "", "(optional) wnative address")
 
 	flag.Parse()
 
@@ -284,4 +300,5 @@ func initSupportList() {
 	supportFuncionList[setBaseGas] = true
 	supportFuncionList[setGas] = true
 	supportFuncionList[anySwapInAll] = true
+	supportFuncionList[changeWnative] = true
 }

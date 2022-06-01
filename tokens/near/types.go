@@ -219,3 +219,7 @@ type AnySwapInAll struct {
 	Amount      string `json:"amount"`
 	FromChainId string `json:"from_chain_id"`
 }
+
+type ChangeWnative struct {
+	NewWnative string `json:"new_wnative"`
+}
