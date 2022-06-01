@@ -10,7 +10,6 @@ import (
 	"github.com/anyswap/CrossChain-Router/v3/params"
 	"github.com/anyswap/CrossChain-Router/v3/router"
 	"github.com/anyswap/CrossChain-Router/v3/tokens"
-	"github.com/mr-tron/base58"
 	"github.com/near/borsh-go"
 )
 
@@ -38,7 +37,7 @@ func (b *Bridge) VerifyMsgHash(rawTx interface{}, msgHashes []string) (err error
 		return tokens.ErrWrongCountOfMsgHashes
 	}
 	msgHash := msgHashes[0]
-	sigHash := base58.Encode(hash[:])
+	sigHash := common.ToHex(hash[:])
 
 	if !strings.EqualFold(sigHash, msgHash) {
 		logFunc := log.GetPrintFuncOr(params.IsDebugMode, log.Info, log.Trace)
